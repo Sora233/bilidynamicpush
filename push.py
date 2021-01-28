@@ -131,6 +131,12 @@ async def load_all_username():
         all_user_name[uid] = await get_user_name(uid)
 
 
+async def load_username(uid):
+    global all_user_name
+    if uid not in all_user_name:
+        all_user_name[uid] = await get_user_name(uid)
+
+
 @sv.on_prefix('订阅动态')
 async def subscribe_dynamic(bot, ev):
     if push_uids == {}:
@@ -148,13 +154,15 @@ async def subscribe_dynamic(bot, ev):
             return
         if not text in push_uids:
             push_uids[text] = [str(ev.group_id)]
+            await load_username(text)
             room_states[text] = False
         else:
             if str(ev.group_id) in push_uids[text]:
                 await bot.send(ev, '订阅失败：请勿重复订阅')
                 return
             push_uids[text].append(str(ev.group_id))
-            push_times[uid] = int(time.time())
+            await load_username(text)
+            push_times[text] = int(time.time())
     else:
         subUid = text.split(' ')[0]
         subGroup = text.split(' ')[1]
@@ -163,12 +171,14 @@ async def subscribe_dynamic(bot, ev):
             return
         if not subUid in push_uids:
             push_uids[subUid] = [subGroup]
+            await load_username(subUid)
             room_states[subUid] = False
         else:
             if subGroup in push_uids[subUid]:
                 await bot.send(ev, '订阅失败：请勿重复订阅')
                 return
             push_uids[subUid].append(subGroup)
+            await load_username(subUid)
         push_times[subUid] = int(time.time())
     saveConfig()
     await bot.send(ev, '订阅成功')
