@@ -1,5 +1,5 @@
 # bilidynamicpush
-一个用于推送哔哩哔哩动态的HoshinoBot插件,支持动态、视频、文章的推送（含图片），支持将6、9宫格图片自动合成单张图片。更新日志可以在[这里](https://github.com/ColdThunder11/bilidynamicpush/blob/main/UPDATE.md)查看。有bug可以在issues中反馈。   
+一个用于推送哔哩哔哩动态的HoshinoBot插件,支持动态、视频、文章的推送（含图片），支持将6、9宫格图片自动合成单张图片。更新日志可以在[这里](https://github.com/Sora233/bilidynamicpush/blob/main/UPDATE.md)查看。有bug可以在issues中反馈。   
 ## 使用方法
 将本项目clone至HoshinoBot\hoshino\modules下，将config.json.example重命名为config.json并自行修改所需要订阅的内容，在__bot__.py中加入bilidynamicpush   
 ## 指令列表
