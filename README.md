@@ -1,4 +1,3 @@
-##本插件不再活跃维护，原因：摸了
 # bilidynamicpush
 一个用于推送哔哩哔哩动态的HoshinoBot插件,支持动态、视频、文章的推送（含图片），支持将6、9宫格图片自动合成单张图片。更新日志可以在[这里](https://github.com/ColdThunder11/bilidynamicpush/blob/main/UPDATE.md)查看。有bug可以在issues中反馈。   
 ## 使用方法
