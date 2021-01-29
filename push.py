@@ -107,7 +107,7 @@ async def check_uid_exsist(uid):
             return True
         return False
     except Exception as e:
-        sv.logger.info('B站用户检查发生错误 ' + e)
+        sv.logger.info('B站用户检查发生错误 ' + str(e))
         return False
 
 
@@ -120,7 +120,7 @@ async def get_user_name(uid):
         res = await resp.json()
         return res['data']['name']
     except Exception as e:
-        sv.logger.info('B站用户名获取发生错误 ' + e)
+        sv.logger.info('B站用户名获取发生错误 ' + str(e))
         return False
 
 
@@ -154,15 +154,14 @@ async def subscribe_dynamic(bot, ev):
             return
         if not text in push_uids:
             push_uids[text] = [str(ev.group_id)]
-            await load_username(text)
             room_states[text] = False
         else:
             if str(ev.group_id) in push_uids[text]:
                 await bot.send(ev, '订阅失败：请勿重复订阅')
                 return
             push_uids[text].append(str(ev.group_id))
-            await load_username(text)
-            push_times[text] = int(time.time())
+        await load_username(text)
+        push_times[text] = int(time.time())
     else:
         subUid = text.split(' ')[0]
         subGroup = text.split(' ')[1]
@@ -171,14 +170,13 @@ async def subscribe_dynamic(bot, ev):
             return
         if not subUid in push_uids:
             push_uids[subUid] = [subGroup]
-            await load_username(subUid)
             room_states[subUid] = False
         else:
             if subGroup in push_uids[subUid]:
                 await bot.send(ev, '订阅失败：请勿重复订阅')
                 return
             push_uids[subUid].append(subGroup)
-            await load_username(subUid)
+        await load_username(subUid)
         push_times[subUid] = int(time.time())
     saveConfig()
     await bot.send(ev, '订阅成功')
@@ -429,7 +427,7 @@ async def check_bili_dynamic():
                 time.sleep(0.5)
             push_times[uid] = int(time.time())
         except Exception as e:
-            sv.logger.info('B站动态检查发生错误 ' + e)
+            sv.logger.info('B站动态检查发生错误 ' + str(e))
     sv.logger.info('B站动态检查结束')
     # 直播状态检查
     sv.logger.info('B站直播状态检查开始')
@@ -472,7 +470,7 @@ async def check_bili_dynamic():
                     await broadcast(msg, push_uids[uid])
             time.sleep(0.5)
         except Exception as e:
-            sv.logger.info('B站直播检查发生错误 ' + e)
+            sv.logger.info('B站直播检查发生错误 ' + str(e))
     sv.logger.info('B站直播状态检查结束')
     isOnChecking = False
 
