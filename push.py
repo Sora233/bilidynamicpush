@@ -1,13 +1,15 @@
-from hoshino import Service, R
-import json
 import asyncio
-from os import path
-from hoshino import aiorequests
-import time
-import nonebot
-from hoshino.priv import *
-from PIL import Image
+import json
 import random
+import time
+import traceback
+from os import path
+
+import nonebot
+from PIL import Image
+from hoshino import Service
+from hoshino import aiorequests
+from hoshino.priv import *
 
 messageLengthLimit = 0
 push_uids = {}
@@ -107,7 +109,7 @@ async def check_uid_exsist(uid):
             return True
         return False
     except Exception as e:
-        sv.logger.info('B站用户检查发生错误 ' + str(e))
+        sv.logger.info(f'B站用户检查发生错误 uid={uid}\n' + traceback.format_exc(e))
         return False
 
 
@@ -120,7 +122,7 @@ async def get_user_name(uid):
         res = await resp.json()
         return res['data']['name']
     except Exception as e:
-        sv.logger.info('B站用户名获取发生错误 ' + str(e))
+        sv.logger.info(f'B站用户名获取发生错误 uid={uid}\n' + traceback.format_exc(e))
         return False
 
 
@@ -252,7 +254,8 @@ async def check_bili_dynamic():
             'Referer': 'https://space.bilibili.com/{user_uid}/'.format(user_uid=uid)
         }
         try:
-            resp = await aiorequests.get('https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid={user_uid}'.format(user_uid=uid), headers=header, timeout=20)
+            resp = await aiorequests.get('https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid={user_uid}'.format(user_uid=uid), headers=header,
+                                         timeout=20)
             res = await resp.json()
             cards = res['data']['cards']
             # cards=[res['data']['cards'][10]]
@@ -418,7 +421,7 @@ async def check_bili_dynamic():
                     sendCQCode.append('发表了动态：\n')
                     sendCQCode.append('暂不支持该动态类型，请进入原动态查看')
                     sendCQCode.append('\nhttps://t.bilibili.com/{dynamicId}'.format(dynamicId=dynamicId))
-                    sv.logger.info('type={type},暂不支持此类动态')
+                    sv.logger.info(f'type={dynamicType},暂不支持此类动态')
                 msg = ''.join(sendCQCode)
                 if push_uids[uid][0] == 'all':
                     await broadcast(msg, sv_name='bili-dynamic')
@@ -427,7 +430,7 @@ async def check_bili_dynamic():
                 time.sleep(0.5)
             push_times[uid] = int(time.time())
         except Exception as e:
-            sv.logger.info('B站动态检查发生错误 ' + str(e))
+            sv.logger.info(f'B站动态检查发生错误 uid={uid}\n' + traceback.format_exc(e))
     sv.logger.info('B站动态检查结束')
     # 直播状态检查
     sv.logger.info('B站直播状态检查开始')
@@ -470,7 +473,7 @@ async def check_bili_dynamic():
                     await broadcast(msg, push_uids[uid])
             time.sleep(0.5)
         except Exception as e:
-            sv.logger.info('B站直播检查发生错误 ' + str(e))
+            sv.logger.info(f'B站直播检查发生错误 uid={uid}\n' + traceback.format_exc(e))
     sv.logger.info('B站直播状态检查结束')
     isOnChecking = False
 
