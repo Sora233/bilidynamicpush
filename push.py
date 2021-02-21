@@ -109,7 +109,7 @@ async def check_uid_exsist(uid):
             return True
         return False
     except Exception as e:
-        sv.logger.info(f'B站用户检查发生错误 uid={uid}\n' + traceback.format_exc(e))
+        sv.logger.info(f'B站用户检查发生错误 uid={uid}\n' + traceback.format_exc())
         return False
 
 
@@ -122,7 +122,7 @@ async def get_user_name(uid):
         res = await resp.json()
         return res['data']['name']
     except Exception as e:
-        sv.logger.info(f'B站用户名获取发生错误 uid={uid}\n' + traceback.format_exc(e))
+        sv.logger.info(f'B站用户名获取发生错误 uid={uid}\n' + traceback.format_exc())
         return False
 
 
@@ -257,6 +257,9 @@ async def check_bili_dynamic():
             resp = await aiorequests.get('https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid={user_uid}'.format(user_uid=uid), headers=header,
                                          timeout=20)
             res = await resp.json()
+            if res is None:
+                sv.logger.info(f'检查{uid}时出错 request response is None')
+                continue
             cards = res['data']['cards']
             # cards=[res['data']['cards'][10]]
             for card in cards:
@@ -430,7 +433,7 @@ async def check_bili_dynamic():
                 time.sleep(0.5)
             push_times[uid] = int(time.time())
         except Exception as e:
-            sv.logger.info(f'B站动态检查发生错误 uid={uid}\n' + traceback.format_exc(e))
+            sv.logger.info(f'B站动态检查发生错误 uid={uid}\n' + traceback.format_exc())
     sv.logger.info('B站动态检查结束')
     # 直播状态检查
     sv.logger.info('B站直播状态检查开始')
@@ -473,7 +476,7 @@ async def check_bili_dynamic():
                     await broadcast(msg, push_uids[uid])
             time.sleep(0.5)
         except Exception as e:
-            sv.logger.info(f'B站直播检查发生错误 uid={uid}\n' + traceback.format_exc(e))
+            sv.logger.info(f'B站直播检查发生错误 uid={uid}\n' + traceback.format_exc())
     sv.logger.info('B站直播状态检查结束')
     isOnChecking = False
 
