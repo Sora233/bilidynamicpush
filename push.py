@@ -48,7 +48,7 @@ def getImageCqCode(path):
 
 
 def getLimitedMessage(originMsg):
-    if messageLengthLimit > 0 and len(originMsg) > messageLengthLimit:
+    if len(originMsg) > messageLengthLimit > 0:
         return originMsg[0:messageLengthLimit] + '……'
     else:
         return originMsg
@@ -262,13 +262,15 @@ async def check_bili_dynamic():
                 continue
             cards = res['data']['cards']
             # cards=[res['data']['cards'][10]]
+            uid_time = push_times.get(uid, 0)
+            push_times[uid] = int(time.time())
             for card in cards:
                 sendCQCode = []
                 userUid = card['desc']['user_profile']['info']['uid']
                 # uname=card['desc']['user_profile']['info']['uname']
                 uname = all_user_name[uid]
                 timestamp = card['desc']['timestamp']
-                if timestamp < push_times[uid]:
+                if timestamp < uid_time:
                     # sv.logger.info(uname+'检查完成')
                     break
                 dynamicId = card['desc']['dynamic_id']
@@ -431,7 +433,6 @@ async def check_bili_dynamic():
                 else:
                     await broadcast(msg, push_uids[uid])
                 time.sleep(0.5)
-            push_times[uid] = int(time.time())
         except Exception as e:
             sv.logger.info(f'B站动态检查发生错误 uid={uid}\n' + traceback.format_exc())
     sv.logger.info('B站动态检查结束')
